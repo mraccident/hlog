@@ -18,6 +18,9 @@ main = withSocketsDo $ do
 client :: Socket -> FdKey -> Event -> IO ()
 client sock _ _ = do
     (c, _) <- accept sock
+    req <- recv c 4096
+    peer <- getPeerName c
+    Prelude.putStrLn $ show peer ++ ": " ++ show req
     sendAll c msg
     sClose c
 
