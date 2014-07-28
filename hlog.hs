@@ -15,6 +15,7 @@ main = withSocketsDo $ do
     registerFd mgr (client sock) fd evtRead
     loop mgr
 
+client :: Socket -> FdKey -> Event -> IO ()
 client sock _ _ = do
     (c, _) <- accept sock
     sendAll c msg
