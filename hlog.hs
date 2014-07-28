@@ -1,11 +1,12 @@
+{-# LANGUAGE OverloadedStrings #-}
+import Prelude hiding (length, intercalate)
 import Network hiding (accept)
-import Network.Socket (fdSocket, accept)
+import Network.Socket (fdSocket, accept, getPeerName)
 import Network.Socket.ByteString
-import Data.List (intercalate)
-import Data.ByteString.Char8 hiding (length, intercalate)
+import Data.ByteString.Char8
 import GHC.Event
-import System.Posix
-import System.Posix.IO
+import System.Posix hiding (append)
+import System.Posix.IO hiding (append)
 
 main :: IO ()
 main = withSocketsDo $ do
@@ -24,17 +25,13 @@ client sock _ _ = do
     sendAll c msg
     sClose c
 
-httpify :: String -> String
+httpify :: ByteString -> ByteString
 httpify content = 
     intercalate "\r\n" [
           "HTTP/1.0 200 PISS OFF"
-        , "Content-Length: " ++ (show $ length content)
+        , "Content-Length: " `append` (pack $ show $ length content)
         , ""
-        , content
-        , ""]
+        , content]
 
--- Feck off, standards
-html :: String -> String
-html body = "<html><pre>" ++ body
-
-msg = pack $ httpify $ html "Piss off."
+msg :: ByteString
+msg = httpify "Piss off."
