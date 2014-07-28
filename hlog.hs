@@ -24,7 +24,7 @@ client sock _ _ = do
 httpify :: String -> String
 httpify content = 
     intercalate "\r\n" [
-          "HTTP/1.0 200 OK"
+          "HTTP/1.0 200 PISS OFF"
         , "Content-Length: " ++ (show $ length content)
         , ""
         , content
