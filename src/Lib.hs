@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Lib
-    ( serve
+    ( serve,
+      reqUri
     ) where
 
 import Prelude hiding (length, intercalate)
@@ -9,6 +10,7 @@ import Network hiding (accept)
 import Network.Socket hiding (sClose)
 import Network.Socket.ByteString (sendAll)
 import Control.Concurrent
+import Text.Regex.PCRE
 
 serve :: PortNumber -> IO ()
 serve port = withSocketsDo $ do
@@ -29,6 +31,13 @@ loop sock = do
         body c = do
             sendAll c msg
             sClose c
+
+reqUri :: String -> Maybe String
+reqUri r = group1 $ ((r =~ pattern) :: [[String]])
+    where pattern = "GET ([^ ]+) HTTP/1\\.1" :: String
+          group1 :: [[String]] -> Maybe String
+          group1 [[_, x]] = Just x
+          group1 _ = Nothing
 
 httpify :: ByteString -> ByteString
 httpify content =

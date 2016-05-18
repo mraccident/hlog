@@ -19,6 +19,7 @@ library
   build-depends:       base >= 4.7 && < 5
                      , network
                      , bytestring
+                     , regex-pcre
   default-language:    Haskell2010
 
 executable hlog
@@ -35,6 +36,8 @@ test-suite hlog-test
   main-is:             Spec.hs
   build-depends:       base
                      , hlog
+                     , hspec
+                     , QuickCheck
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
