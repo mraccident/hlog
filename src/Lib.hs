@@ -27,11 +27,11 @@ loop sock = do
     Prelude.putStrLn $ show peer ++ ": " ++ show req
     Prelude.putStrLn $ "Requested URI: " ++ show (reqUri req)
 
-    forkIO $ body conn
+    forkIO $ body conn req
     loop sock
     where
-        body c = do
-            sendAll c msg
+        body c r = do
+            sendAll c $ handleReq r
             sClose c
 
 reqUri :: String -> Maybe String
@@ -48,6 +48,19 @@ httpify content =
         , "Content-Length: " `append` (pack $ show $ length content)
         , ""
         , content]
+
+-- Handle HTTP request
+handleReq :: String -> ByteString
+handleReq r = handleUri $ reqUri r
+    where
+        handleUri :: Maybe String -> ByteString
+        handleUri Nothing = response "400 FECK OFF"
+            "<h1>HTTP 400: THAT WOULD BE AN ECUMENICAL MATTER.<h1><hr/>"
+        handleUri (Just x) = response "404 ARSE" (
+            "<h1>HTTP 404 Down With This Sort Of Thing</h1><hr/>\
+            \If there were a document at <code>"
+            `append` (pack x) `append`
+            "</code>, I would serve it to you. Alas, there is not.")
 
 response :: ByteString -> ByteString -> ByteString
 response status body =
