@@ -41,14 +41,6 @@ reqUri r = group1 $ ((r =~ pattern) :: [[String]])
           group1 [[_, x]] = Just x
           group1 _ = Nothing
 
-httpify :: ByteString -> ByteString
-httpify content =
-    intercalate "\r\n" [
-          "HTTP/1.0 200 PISS OFF"
-        , "Content-Length: " `append` (pack $ show $ length content)
-        , ""
-        , content]
-
 -- Handle HTTP request
 handleReq :: String -> ByteString
 handleReq r = handleUri $ reqUri r
@@ -69,6 +61,3 @@ response status body =
         , "Content-Length: " `append` (pack $ show $ length body)
         , ""
         , body]
-
-msg :: ByteString
-msg = httpify "Piss off."
