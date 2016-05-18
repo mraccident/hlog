@@ -24,7 +24,7 @@ main = hspec $ do
     describe "HTTP response" $ do
         it "has correct zero content-length" $ do
             response "200 OK" "" `shouldBe`
-                "HTTP/1.0 200 OK\r\nContent-Length: 0\r\n\r\n"
+                "HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n"
         it "has correct non-zero content-length" $ do
             response "404 Not Found" "Eff off." `shouldBe`
-                "HTTP/1.0 404 Not Found\r\nContent-Length: 8\r\n\r\nEff off."
+                "HTTP/1.1 404 Not Found\r\nContent-Length: 8\r\n\r\nEff off."

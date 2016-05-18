@@ -57,7 +57,7 @@ handleReq r = handleUri $ reqUri r
 response :: ByteString -> ByteString -> ByteString
 response status body =
     intercalate "\r\n" [
-          "HTTP/1.0 " `append` status
+          "HTTP/1.1 " `append` status
         , "Content-Length: " `append` (pack $ show $ length body)
         , ""
         , body]
