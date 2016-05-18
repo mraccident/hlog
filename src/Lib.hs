@@ -24,6 +24,7 @@ loop sock = do
     req <- recv conn 4096
     peer <- getPeerName conn
     Prelude.putStrLn $ show peer ++ ": " ++ show req
+    Prelude.putStrLn $ "Requested URI: " ++ show (reqUri req)
 
     forkIO $ body conn
     loop sock
