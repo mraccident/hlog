@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Lib
-    ( serve,
-      reqUri
+    ( serve
+    , response
+    , reqUri
     ) where
 
 import Prelude hiding (length, intercalate)
@@ -47,6 +48,14 @@ httpify content =
         , "Content-Length: " `append` (pack $ show $ length content)
         , ""
         , content]
+
+response :: ByteString -> ByteString -> ByteString
+response status body =
+    intercalate "\r\n" [
+          "HTTP/1.0 " `append` status
+        , "Content-Length: " `append` (pack $ show $ length body)
+        , ""
+        , body]
 
 msg :: ByteString
 msg = httpify "Piss off."
