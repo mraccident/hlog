@@ -35,13 +35,6 @@ loop sock = do
             sendAll conn $ resp
             sClose conn
 
-reqUri :: String -> Maybe String
-reqUri r = group1 $ ((r =~ pattern) :: [[String]])
-    where pattern = "GET /([^ ]+) HTTP/1\\.1" :: String
-          group1 :: [[String]] -> Maybe String
-          group1 [[_, x]] = Just x
-          group1 _ = Nothing
-
 -- Serve static file
 serveStatic :: String -> IO ByteString
 serveStatic request = case (reqUri request) of
@@ -61,6 +54,13 @@ page400 :: ByteString
 page400 = "<html><center><h1>400 NEED A DRINK</h1><hr/>\
             \How did that <em>gobshite</em> get on the socket?!</html>"
 
+reqUri :: String -> Maybe String
+reqUri r = group1 $ ((r =~ pattern) :: [[String]])
+    where pattern = "GET /([^ ]+) HTTP/1\\.1" :: String
+          group1 :: [[String]] -> Maybe String
+          group1 [[_, x]] = Just x
+          group1 _ = Nothing
+
 fileContents :: FilePath -> IO (Maybe ByteString)
 fileContents path = do
     -- XXX: this annotation is annoying, please slay it
@@ -68,19 +68,6 @@ fileContents path = do
     case contents  of
         Left _ -> return Nothing
         Right text -> return $ Just text
-
--- Handle HTTP request
-handleReq :: String -> ByteString
-handleReq r = handleUri $ reqUri r
-    where
-        handleUri :: Maybe String -> ByteString
-        handleUri Nothing = response "400 FECK OFF"
-            "<h1>HTTP 400: THAT WOULD BE AN ECUMENICAL MATTER.<h1><hr/>"
-        handleUri (Just x) = response "404 ARSE" (
-            "<h1>HTTP 404 Down With This Sort Of Thing</h1><hr/>\
-            \If there were a document at <code>"
-            `append` (pack x) `append`
-            "</code>, I would serve it to you. Alas, there is not.")
 
 response :: ByteString -> ByteString -> ByteString
 response status body =
