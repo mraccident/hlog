@@ -5,12 +5,13 @@ module Lib
     , reqUri
     ) where
 
-import Prelude hiding (length, intercalate)
+import Prelude hiding (length, intercalate, readFile)
 import Data.ByteString.Char8
 import Network hiding (accept)
 import Network.Socket hiding (sClose)
 import Network.Socket.ByteString (sendAll)
 import Control.Concurrent
+import Control.Exception
 import Text.Regex.PCRE
 
 serve :: PortNumber -> IO ()
@@ -31,15 +32,35 @@ loop sock = do
     loop sock
     where
         body c r = do
-            sendAll c $ handleReq r
+            resp <- serveStatic r
+            sendAll c $ resp
             sClose c
 
 reqUri :: String -> Maybe String
 reqUri r = group1 $ ((r =~ pattern) :: [[String]])
-    where pattern = "GET ([^ ]+) HTTP/1\\.1" :: String
+    where pattern = "GET /([^ ]+) HTTP/1\\.1" :: String
           group1 :: [[String]] -> Maybe String
           group1 [[_, x]] = Just x
           group1 _ = Nothing
+
+-- Serve static file
+serveStatic :: String -> IO ByteString
+serveStatic request = do
+    case (reqUri request) of
+        Nothing -> return $ response "400 NEED A DRINK" ""
+        Just uri -> do
+            result <- fileContents uri
+            case result of
+                Nothing -> return $ response "404 FECK OFF" ""
+                Just garbage -> return $ response "200 ARSE" garbage
+
+fileContents :: FilePath -> IO (Maybe ByteString)
+fileContents path = do
+    -- XXX: this annotation is annoying, please slay it
+    contents <- (try $ readFile path) :: IO (Either IOException ByteString)
+    case contents  of
+        Left _ -> return Nothing
+        Right text -> return $ Just text
 
 -- Handle HTTP request
 handleReq :: String -> ByteString
