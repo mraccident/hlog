@@ -45,12 +45,21 @@ reqUri r = group1 $ ((r =~ pattern) :: [[String]])
 -- Serve static file
 serveStatic :: String -> IO ByteString
 serveStatic request = case (reqUri request) of
-    Nothing -> return $ response "400 NEED A DRINK" ""
+    Nothing -> return $ response "400 NEED A DRINK" page400
     Just uri -> do
         result <- fileContents uri
         case result of
-            Nothing -> return $ response "404 FECK OFF" ""
+            Nothing -> return $ response "404 FECK OFF" page404
             Just garbage -> return $ response "200 ARSE" garbage
+
+page404 :: ByteString
+page404 = "<html><center><h1>404 Feck Off</h1><hr/>\
+            \One last time. These packets are <em>small</em>, but the ones \
+            \out there are <em>far away</em>.</html>"
+
+page400 :: ByteString
+page400 = "<html><center><h1>400 NEED A DRINK</h1><hr/>\
+            \How did that <em>gobshite</em> get on the socket?!</html>"
 
 fileContents :: FilePath -> IO (Maybe ByteString)
 fileContents path = do
