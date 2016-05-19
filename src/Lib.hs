@@ -21,20 +21,19 @@ serve port = withSocketsDo $ do
 
 loop sock = do
     (conn, _) <- accept sock
-
-    -- Print incoming request information
-    req <- recv conn 4096
-    peer <- getPeerName conn
-    Prelude.putStrLn $ show peer ++ ": " ++ show req
-    Prelude.putStrLn $ "Requested URI: " ++ show (reqUri req)
-
-    forkIO $ body conn req
+    forkIO $ body conn
     loop sock
     where
-        body c r = do
-            resp <- serveStatic r
-            sendAll c $ resp
-            sClose c
+        body conn = do
+            req <- recv conn 4096
+
+            -- Print incoming request information
+            peer <- getPeerName conn
+            Prelude.putStrLn $ show peer ++ ": " ++ show req
+            Prelude.putStrLn $ "Requested URI: " ++ show (reqUri req)
+            resp <- serveStatic req
+            sendAll conn $ resp
+            sClose conn
 
 reqUri :: String -> Maybe String
 reqUri r = group1 $ ((r =~ pattern) :: [[String]])
