@@ -8,8 +8,8 @@ module Lib
 import Prelude hiding (length, intercalate, readFile)
 import Data.ByteString.Char8
 import Network hiding (accept)
-import Network.Socket hiding (sClose)
-import Network.Socket.ByteString (sendAll)
+import Network.Socket hiding (sClose, recv)
+import Network.Socket.ByteString (sendAll, recv)
 import Control.Concurrent
 import Control.Exception
 import Text.Regex.PCRE
@@ -36,7 +36,7 @@ loop sock = do
             sClose conn
 
 -- Serve static file
-serveStatic :: String -> IO ByteString
+serveStatic :: ByteString -> IO ByteString
 serveStatic request = case (reqUri request) of
     Nothing -> return $ response "400 NEED A DRINK" page400
     Just uri -> do
@@ -54,17 +54,18 @@ page400 :: ByteString
 page400 = "<html><center><h1>400 NEED A DRINK</h1><hr/>\
             \How did that <em>gobshite</em> get on the socket?!</html>"
 
-reqUri :: String -> Maybe String
-reqUri r = group1 $ ((r =~ pattern) :: [[String]])
-    where pattern = "GET /([^ ]+) HTTP/1\\.1" :: String
-          group1 :: [[String]] -> Maybe String
+reqUri :: ByteString -> Maybe ByteString
+reqUri r = group1 $ ((r =~ pattern) :: [[ByteString]])
+    where pattern = "GET /([^ ]+) HTTP/1\\.1" :: ByteString
+          group1 :: [[ByteString]] -> Maybe ByteString
           group1 [[_, x]] = Just x
           group1 _ = Nothing
 
-fileContents :: FilePath -> IO (Maybe ByteString)
+fileContents :: ByteString -> IO (Maybe ByteString)
 fileContents path = do
     -- XXX: this annotation is annoying, please slay it
-    contents <- (try $ readFile path) :: IO (Either IOException ByteString)
+    -- XXX: also, whytf does ByteString.readFile take a [Char]???
+    contents <- (try $ readFile $ unpack path) :: IO (Either IOException ByteString)
     case contents  of
         Left _ -> return Nothing
         Right text -> return $ Just text
