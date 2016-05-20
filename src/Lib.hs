@@ -43,24 +43,28 @@ handleRequest request = case (reqUri request) of
         -- everything else goes to the as yet nonexistent blog.
         case (stripPrefix "static/" uri) of
             Just path -> serveStatic path
-            Nothing -> return $ response "403 Forbidden" uri
+            Nothing -> return $ response "403 FECK OFF" page403
 
 -- Serve static file
 serveStatic :: ByteString -> IO ByteString
 serveStatic path = do
     result <- fileContents path
     case result of
-        Nothing -> return $ response "404 FECK OFF" page404
+        Nothing -> return $ response "404 NO TEA" page404
         Just garbage -> return $ response "200 ARSE" garbage
-
-page404 :: ByteString
-page404 = "<html><center><h1>404 Feck Off</h1><hr/>\
-            \One last time. These packets are <em>small</em>, but the ones \
-            \out there are <em>far away</em>.</html>"
 
 page400 :: ByteString
 page400 = "<html><center><h1>400 NEED A DRINK</h1><hr/>\
             \How did that <em>gobshite</em> get on the socket?!</html>"
+
+page403 :: ByteString
+page403 = "<html><center><h1>403 Feck Off, Cup!</h1><hr/>\
+            \And what do you say to a cup of tea?</html>"
+
+page404 :: ByteString
+page404 = "<html><center><h1>404 Shut Up Dougal</h1><hr/>\
+            \One last time. These packets are <em>small</em>, but the ones \
+            \out there are <em>far away</em>.</html>"
 
 reqUri :: ByteString -> Maybe ByteString
 reqUri r = group1 $ ((r =~ pattern) :: [[ByteString]])
