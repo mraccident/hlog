@@ -31,19 +31,27 @@ loop sock = do
             peer <- getPeerName conn
             Prelude.putStrLn $ show peer ++ ": " ++ show req
             Prelude.putStrLn $ "Requested URI: " ++ show (reqUri req)
-            resp <- serveStatic req
+            resp <- handleRequest req
             sendAll conn $ resp
             sClose conn
 
--- Serve static file
-serveStatic :: ByteString -> IO ByteString
-serveStatic request = case (reqUri request) of
+handleRequest :: ByteString -> IO ByteString
+handleRequest request = case (reqUri request) of
     Nothing -> return $ response "400 NEED A DRINK" page400
     Just uri -> do
-        result <- fileContents uri
-        case result of
-            Nothing -> return $ response "404 FECK OFF" page404
-            Just garbage -> return $ response "200 ARSE" garbage
+        -- Treat URIs starting with static/ as requests for static files;
+        -- everything else goes to the as yet nonexistent blog.
+        case (stripPrefix "static/" uri) of
+            Just path -> serveStatic path
+            Nothing -> return $ response "403 Forbidden" uri
+
+-- Serve static file
+serveStatic :: ByteString -> IO ByteString
+serveStatic path = do
+    result <- fileContents path
+    case result of
+        Nothing -> return $ response "404 FECK OFF" page404
+        Just garbage -> return $ response "200 ARSE" garbage
 
 page404 :: ByteString
 page404 = "<html><center><h1>404 Feck Off</h1><hr/>\
