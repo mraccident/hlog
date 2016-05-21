@@ -13,6 +13,7 @@ import Network.Socket.ByteString (sendAll, recv)
 import Control.Concurrent
 import Control.Exception
 import Text.Regex.PCRE
+import System.Posix.Env.ByteString
 
 serve :: PortNumber -> IO ()
 serve port = withSocketsDo $ do
@@ -45,10 +46,19 @@ handleRequest request = case (reqUri request) of
             Just path -> serveStatic path
             Nothing -> return $ response "403 FECK OFF" page403
 
+staticFilesPath :: IO ByteString
+staticFilesPath = do
+    args <- getArgs
+    return $ case args of
+        [path] -> path
+        [] -> "static"
+        _ -> "static"
+
 -- Serve static file
 serveStatic :: ByteString -> IO ByteString
 serveStatic path = do
-    result <- fileContents path
+    prefix <- staticFilesPath
+    result <- fileContents (prefix `append` "/" `append` path)
     case result of
         Nothing -> return $ response "404 NO TEA" page404
         Just garbage -> return $ response "200 ARSE" garbage
