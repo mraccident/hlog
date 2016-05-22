@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 import Test.Hspec
 
-import Lib
+import Server
 
 main :: IO ()
 main = hspec $ do

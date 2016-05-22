@@ -1,6 +1,6 @@
 name:                hlog
 version:             0.1.0.0
-synopsis:            Initial project template from stack
+synopsis:            Blog + Haskell = Hlog
 description:         Please see README.md
 homepage:            https://github.com/tripped/hlog#readme
 license:             BSD3
@@ -15,7 +15,7 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Lib
+  exposed-modules:     Server
   build-depends:       base >= 4.7 && < 5
                      , network
                      , bytestring >= 0.10.8.1

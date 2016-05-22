@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Lib
+module Server
     ( serve
     , response
     , reqUri

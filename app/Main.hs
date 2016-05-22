@@ -1,5 +1,5 @@
 module Main where
 
-import Lib
+import Server
 
 main = serve 1337
