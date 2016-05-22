@@ -42,7 +42,7 @@ handleRequest request = case (reqUri request) of
     Just uri -> do
         -- Treat URIs starting with static/ as requests for static files;
         -- everything else goes to the as yet nonexistent blog.
-        case (stripPrefix "static/" uri) of
+        case (stripPrefix "/static/" uri) of
             Just path -> serveStatic path
             Nothing -> return $ response "403 FECK OFF" page403
 
@@ -78,7 +78,7 @@ page404 = "<html><center><h1>404 Shut Up Dougal</h1><hr/>\
 
 reqUri :: ByteString -> Maybe ByteString
 reqUri r = group1 $ ((r =~ pattern) :: [[ByteString]])
-    where pattern = "GET /([^ ]+) HTTP/1\\.1" :: ByteString
+    where pattern = "GET ([^ ]+) HTTP/1\\.1" :: ByteString
           group1 :: [[ByteString]] -> Maybe ByteString
           group1 [[_, x]] = Just x
           group1 _ = Nothing
