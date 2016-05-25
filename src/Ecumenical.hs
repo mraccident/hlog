@@ -11,17 +11,20 @@ import Control.Exception
 -- Get a value from the store by key, if it exists.
 retrieve :: ByteString -> IO (Maybe ByteString)
 retrieve key = do
-    value <- fileContents key
+    value <- fileContents $ dataPath key
     return value
 
 put :: ByteString -> ByteString -> IO ()
 put key value = do
-    writeFile (unpack key) value
+    writeFile (dataPath key) value
     return ()
 
-fileContents :: ByteString -> IO (Maybe ByteString)
+fileContents :: FilePath -> IO (Maybe ByteString)
 fileContents path = do
-    contents <- (try $ readFile $ unpack path) :: IO (Either IOException ByteString)
+    contents <- (try $ readFile path) :: IO (Either IOException ByteString)
     case contents  of
         Left _ -> return Nothing
         Right text -> return $ Just text
+
+dataPath :: ByteString -> FilePath
+dataPath key = "data/" ++ (unpack key)

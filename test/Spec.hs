@@ -32,7 +32,7 @@ main = hspec $ do
 
     describe "Ecumenical DB" $ do
         it "returns Nothing for a key that has not been added" $ do
-            result <- retrieve "foo"
+            result <- retrieve "nothing"
             result `shouldBe` Nothing
         it "returns the value associated with a stored key" $ do
             -- horribly impure, also not really unit testable!
