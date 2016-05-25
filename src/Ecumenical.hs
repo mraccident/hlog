@@ -7,6 +7,7 @@ module Ecumenical
 import Prelude hiding (readFile, writeFile)
 import Data.ByteString.Char8
 import Control.Exception
+import Control.Monad.Reader
 
 -- Get a value from the store by key, if it exists.
 retrieve :: ByteString -> IO (Maybe ByteString)
