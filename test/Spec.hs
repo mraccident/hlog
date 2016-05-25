@@ -31,6 +31,12 @@ main = hspec $ do
                 "HTTP/1.1 404 Not Found\r\nContent-Length: 8\r\n\r\nEff off."
 
     describe "Ecumenical DB" $ do
-        it "returns Nothing for a key that has not been added." $ do
+        it "returns Nothing for a key that has not been added" $ do
             result <- retrieve "foo"
             result `shouldBe` Nothing
+        it "returns the value associated with a stored key" $ do
+            -- horribly impure, also not really unit testable!
+            -- need to fix this.
+            _ <- put "foo" "bar"
+            result <- retrieve "foo"
+            result `shouldBe` Just "bar"
