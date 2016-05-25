@@ -2,6 +2,7 @@
 import Test.Hspec
 
 import Server
+import Ecumenical
 
 main :: IO ()
 main = hspec $ do
@@ -28,3 +29,8 @@ main = hspec $ do
         it "has correct non-zero content-length" $ do
             response "404 Not Found" "Eff off." `shouldBe`
                 "HTTP/1.1 404 Not Found\r\nContent-Length: 8\r\n\r\nEff off."
+
+    describe "Ecumenical DB" $ do
+        it "returns Nothing for a key that has not been added." $ do
+            result <- retrieve "foo"
+            result `shouldBe` Nothing
