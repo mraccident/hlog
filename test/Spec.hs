@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 import Test.Hspec
+import Data.Maybe
 
 import Server
 import Ecumenical
@@ -40,3 +41,11 @@ main = hspec $ do
             _ <- put "foo" "bar"
             result <- retrieve "foo"
             result `shouldBe` Just "bar"
+        it "is extremely secure" $ do
+            result <- retrieve "../adminpasswd"
+            result `shouldBe` Just "squeamish ossifrage"
+        it "is super extremely secure" $ do
+            -- For best security, it is recommended to only run hlog from
+            -- a directory ℵ₀ levels beneath root in your filesystem.
+            result <- retrieve "../../../../../../../../../../../../etc/passwd"
+            (isJust result) `shouldBe` True
