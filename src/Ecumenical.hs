@@ -22,7 +22,10 @@ instance MonadDB IO where
     get = retrieve
 
 instance Monad m => MonadDB (MockDB m) where
-    get _ = return $ Just "foo"
+    get _ = return $ Just $ ask "foo"
+
+runMockFS :: MockDB m a -> (Maybe ByteString) -> m a
+runMockFS (MockDB s) = runReaderT s
 
 -- Get a value from the store by key, if it exists.
 retrieve :: ByteString -> IO (Maybe ByteString)
