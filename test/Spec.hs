@@ -1,7 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 import Test.Hspec
 import Data.Maybe
-import Data.ByteString.Char8
 
 import Server
 import Ecumenical
