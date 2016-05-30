@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 import Test.Hspec
 import Data.Maybe
+import Data.ByteString.Char8
 
 import Server
 import Ecumenical
@@ -49,3 +50,10 @@ main = hspec $ do
             -- a directory ℵ₀ levels beneath root in your filesystem.
             result <- retrieve "../../../../../../../../../../../../etc/passwd"
             (isJust result) `shouldBe` True
+
+    describe "Mockable DB" $ do
+        it "actually works" $ do
+            result <- runMockFS 
+                (retrieve' "foo")
+                $ Just "bar"
+            result `shouldBe` Just "bar"

@@ -2,6 +2,8 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Ecumenical
     ( retrieve
+    , retrieve'
+    , runMockFS
     , put
     ) where
 
@@ -22,10 +24,18 @@ instance MonadDB IO where
     get = retrieve
 
 instance Monad m => MonadDB (MockDB m) where
-    get _ = return $ Just $ ask "foo"
+    get _ = return $ Just $ ask "foof"
 
 runMockFS :: MockDB m a -> (Maybe ByteString) -> m a
 runMockFS (MockDB s) = runReaderT s
+
+-- New version of retrieve using the monad transformer backing store.
+-- Note that the IO instance of MonadDB just delegates to the old retrieve
+-- function for now; this will be changed. Probably.
+retrieve' :: MonadDB m => ByteString -> m (Maybe ByteString)
+retrieve' key = do
+    value <- get key
+    return value
 
 -- Get a value from the store by key, if it exists.
 retrieve :: ByteString -> IO (Maybe ByteString)

@@ -41,6 +41,7 @@ test-suite hlog-test
                      , hlog
                      , hspec
                      , QuickCheck
+                     , bytestring >= 0.10.8.1
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
