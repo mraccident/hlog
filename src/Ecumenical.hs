@@ -33,9 +33,7 @@ runMockFS (MockDB s) = runReaderT s
 -- Note that the IO instance of MonadDB just delegates to the old retrieve
 -- function for now; this will be changed. Probably.
 retrieve' :: MonadDB m => ByteString -> m (Maybe ByteString)
-retrieve' key = do
-    value <- get key
-    return value
+retrieve' = get
 
 -- Get a value from the store by key, if it exists.
 retrieve :: ByteString -> IO (Maybe ByteString)
