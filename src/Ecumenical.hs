@@ -26,7 +26,7 @@ instance MonadDB IO where
 instance Monad m => MonadDB (MockDB m) where
     get _ = return $ Just $ ask "foof"
 
-runMockFS :: MockDB m a -> (Maybe ByteString) -> m a
+runMockFS :: MockDB m a -> Maybe ByteString -> m a
 runMockFS (MockDB s) = runReaderT s
 
 -- New version of retrieve using the monad transformer backing store.
