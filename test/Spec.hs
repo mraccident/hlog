@@ -54,5 +54,5 @@ main = hspec $ do
         it "actually works" $ do
             result <- runMockFS 
                 (retrieve' "foo")
-                $ Just "bar"
-            result `shouldBe` Just "bar"
+                $ Just "so totally ignored"
+            result `shouldBe` Just "foof"
