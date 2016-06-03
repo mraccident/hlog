@@ -53,6 +53,6 @@ main = hspec $ do
     describe "Mockable DB" $ do
         it "actually works" $ do
             result <- runMockFS 
-                (retrieve' "foo")
-                $ Just "so totally ignored"
+                (retrieve' "arbitrary key")
+                $ Just "foof"
             result `shouldBe` Just "foof"

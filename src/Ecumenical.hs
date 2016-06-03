@@ -15,7 +15,12 @@ import Control.Monad.Trans
 
 newtype MockDB m a = MockDB
     { db :: ReaderT (Maybe ByteString) m a }
-    deriving (Applicative, Functor, Monad, MonadTrans)
+    deriving ( Applicative
+             , Functor
+             , Monad
+             , MonadTrans
+             , MonadReader (Maybe ByteString)
+             )
 
 class Monad m => MonadDB m where
     get :: ByteString -> m (Maybe ByteString)
@@ -24,7 +29,7 @@ instance MonadDB IO where
     get = retrieve
 
 instance Monad m => MonadDB (MockDB m) where
-    get _ = return $ Just $ ask "foof"
+    get _ = ask
 
 runMockFS :: MockDB m a -> Maybe ByteString -> m a
 runMockFS (MockDB s) = runReaderT s
