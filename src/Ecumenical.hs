@@ -45,9 +45,7 @@ retrieve :: ByteString -> IO (Maybe ByteString)
 retrieve key = fileContents $ dataPath key
 
 put :: ByteString -> ByteString -> IO ()
-put key value = do
-    writeFile (dataPath key) value
-    return ()
+put key value = writeFile (dataPath key) value
 
 fileContents :: FilePath -> IO (Maybe ByteString)
 fileContents path = do
