@@ -42,9 +42,7 @@ retrieve' = get
 
 -- Get a value from the store by key, if it exists.
 retrieve :: ByteString -> IO (Maybe ByteString)
-retrieve key = do
-    value <- fileContents $ dataPath key
-    return value
+retrieve key = fileContents $ dataPath key
 
 put :: ByteString -> ByteString -> IO ()
 put key value = do
