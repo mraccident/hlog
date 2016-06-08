@@ -14,6 +14,7 @@ import Control.Concurrent
 import Control.Exception
 import Text.Regex.PCRE
 import System.Posix.Env.ByteString
+import Ecumenical
 
 serve :: PortNumber -> IO ()
 serve port = withSocketsDo $ do
@@ -44,7 +45,11 @@ handleRequest request = case (reqUri request) of
         -- everything else goes to the as yet nonexistent blog.
         case (stripPrefix "/static/" uri) of
             Just path -> serveStatic path
-            Nothing -> return $ response "403 FECK OFF" page403
+            Nothing -> do
+                value <- retrieve uri
+                case value of
+                    Just value -> return $ response "200 DRINK" value
+                    Nothing -> return $ response "404 THE FECK" page404
 
 staticFilesPath :: IO ByteString
 staticFilesPath = do
