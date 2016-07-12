@@ -41,7 +41,7 @@ retrieve = get
 
 -- Get a value from the store by key, if it exists.
 retrieveFromFile :: ByteString -> IO (Maybe ByteString)
-retrieveFromFile key = fileContents $ dataPath key
+retrieveFromFile = fileContents . dataPath
 
 -- XXX: probably need a State or Free monad transformer wrapper for put as well
 put :: ByteString -> ByteString -> IO ()
