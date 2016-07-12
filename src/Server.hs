@@ -46,7 +46,7 @@ handleRequest request = case (reqUri request) of
         case (stripPrefix "/static/" uri) of
             Just path -> serveStatic path
             Nothing -> do
-                value <- retrieve' uri
+                value <- retrieve uri
                 case value of
                     Just value -> return $ response "200 DRINK" value
                     Nothing -> return $ response "404 THE FECK" page404

@@ -2,7 +2,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Ecumenical
     ( retrieve
-    , retrieve'
     , runMockFS
     , put
     ) where
@@ -26,7 +25,7 @@ class Monad m => MonadDB m where
     get :: ByteString -> m (Maybe ByteString)
 
 instance MonadDB IO where
-    get = retrieve
+    get = retrieveFromFile
 
 instance Monad m => MonadDB (MockDB m) where
     get _ = ask
@@ -37,13 +36,14 @@ runMockFS (MockDB s) = runReaderT s
 -- New version of retrieve using the monad transformer backing store.
 -- Note that the IO instance of MonadDB just delegates to the old retrieve
 -- function for now; this will be changed. Probably.
-retrieve' :: MonadDB m => ByteString -> m (Maybe ByteString)
-retrieve' = get
+retrieve :: MonadDB m => ByteString -> m (Maybe ByteString)
+retrieve = get
 
 -- Get a value from the store by key, if it exists.
-retrieve :: ByteString -> IO (Maybe ByteString)
-retrieve key = fileContents $ dataPath key
+retrieveFromFile :: ByteString -> IO (Maybe ByteString)
+retrieveFromFile key = fileContents $ dataPath key
 
+-- XXX: probably need a State or Free monad transformer wrapper for put as well
 put :: ByteString -> ByteString -> IO ()
 put key value = writeFile (dataPath key) value
 
