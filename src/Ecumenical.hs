@@ -28,9 +28,7 @@ instance MonadDB IO where
     get = retrieveFromFile
 
 instance Monad m => MonadDB (MockDB m) where
-    get key = do
-        env <- ask
-        return $ env key
+    get k = asks ($ k)
 
 runMockFS :: MockDB m a -> (ByteString -> Maybe ByteString) -> m a
 runMockFS (MockDB s) = runReaderT s
