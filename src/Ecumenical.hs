@@ -13,12 +13,12 @@ import Control.Monad.Reader
 import Control.Monad.Trans
 
 newtype MockDB m a = MockDB
-    { db :: ReaderT (Maybe ByteString) m a }
+    { db :: ReaderT (ByteString -> Maybe ByteString) m a }
     deriving ( Applicative
              , Functor
              , Monad
              , MonadTrans
-             , MonadReader (Maybe ByteString)
+             , MonadReader (ByteString -> Maybe ByteString)
              )
 
 class Monad m => MonadDB m where
@@ -28,9 +28,11 @@ instance MonadDB IO where
     get = retrieveFromFile
 
 instance Monad m => MonadDB (MockDB m) where
-    get _ = ask
+    get key = do
+        env <- ask
+        return $ env key
 
-runMockFS :: MockDB m a -> Maybe ByteString -> m a
+runMockFS :: MockDB m a -> (ByteString -> Maybe ByteString) -> m a
 runMockFS (MockDB s) = runReaderT s
 
 -- New version of retrieve using the monad transformer backing store.
