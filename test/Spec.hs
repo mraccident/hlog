@@ -35,12 +35,6 @@ main = hspec $ do
         it "returns Nothing for a key that has not been added" $ do
             result <- retrieve "nothing"
             result `shouldBe` Nothing
-        it "returns the value associated with a stored key" $ do
-            -- horribly impure, also not really unit testable!
-            -- need to fix this.
-            _ <- put "foo" "bar"
-            result <- retrieve "foo"
-            result `shouldBe` Just "bar"
         it "is extremely secure" $ do
             result <- retrieve "../adminpasswd"
             result `shouldBe` Just "squeamish ossifrage"

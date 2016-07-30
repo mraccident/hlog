@@ -3,7 +3,6 @@
 module Ecumenical
     ( retrieve
     , runMockFS
-    , put
     ) where
 
 import Prelude hiding (readFile, writeFile)
