@@ -32,17 +32,14 @@ main = hspec $ do
                 "HTTP/1.1 404 Not Found\r\nContent-Length: 8\r\n\r\nEff off."
 
     describe "Ecumenical DB" $ do
+        -- There is no longer any need to run hlog from a directory ℵ₀ levels
+        -- beneath root in your filesystem.
+        it "does not traverse paths in keys" $ do
+            result <- retrieve "../../../../../../../../../../../../etc/passwd"
+            result `shouldBe` Nothing
         it "returns Nothing for a key that has not been added" $ do
             result <- retrieve "nothing"
             result `shouldBe` Nothing
-        it "is extremely secure" $ do
-            result <- retrieve "../adminpasswd"
-            result `shouldBe` Just "squeamish ossifrage"
-        it "is super extremely secure" $ do
-            -- For best security, it is recommended to only run hlog from
-            -- a directory ℵ₀ levels beneath root in your filesystem.
-            result <- retrieve "../../../../../../../../../../../../etc/passwd"
-            (isJust result) `shouldBe` True
 
     describe "Mockable DB" $ do
         it "actually works" $ do
