@@ -25,7 +25,7 @@ class Monad m => MonadDB m where
     get :: ByteString -> m (Maybe ByteString)
 
 instance MonadDB IO where
-    get = retrieveFromFile . safe
+    get = retrieveFromFile . encode
 
 instance Monad m => MonadDB (MockDB m) where
     get k = asks ($ k)
@@ -42,10 +42,6 @@ retrieve = get
 -- Get a value from the store by key, if it exists.
 retrieveFromFile :: ByteString -> IO (Maybe ByteString)
 retrieveFromFile = fileContents . dataPath
-
--- Encode keys to prevent directory traversal during lookup
-safe :: ByteString -> ByteString
-safe = encode
 
 -- XXX: probably need a State or Free monad transformer wrapper for put as well
 put :: ByteString -> ByteString -> IO ()
