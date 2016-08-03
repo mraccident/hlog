@@ -37,9 +37,6 @@ main = hspec $ do
         it "does not traverse paths in keys" $ do
             result <- retrieve "../../../../../../../../../../../../etc/passwd"
             result `shouldBe` Nothing
-        it "returns Nothing for a key that has not been added" $ do
-            result <- retrieve "nothing"
-            result `shouldBe` Nothing
 
     describe "Mockable DB" $ do
         it "actually works" $ do
