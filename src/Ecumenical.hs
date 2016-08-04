@@ -2,6 +2,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Ecumenical
     ( retrieve
+    , indirect
     , runMockFS
     ) where
 
@@ -38,6 +39,14 @@ runMockFS (MockDB s) = runReaderT s
 -- function for now; this will be changed. Probably.
 retrieve :: MonadDB m => ByteString -> m (Maybe ByteString)
 retrieve = get
+
+indirect :: MonadDB m => ByteString -> m (Maybe ByteString)
+indirect x = do
+    y <- retrieve x
+    result <- case y of
+        Nothing -> return Nothing
+        Just y -> retrieve y
+    return result
 
 -- Get a value from the store by key, if it exists.
 retrieveFromFile :: ByteString -> IO (Maybe ByteString)

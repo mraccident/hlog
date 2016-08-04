@@ -44,3 +44,9 @@ main = hspec $ do
             result <- runMockFS
                 (retrieve "arbitrary key") env
             result `shouldBe` Just "foof"
+        it "does indirect lookup" $ do
+            let env "foo" = Just "bar"
+                env "bar" = Just "baz"
+            result <- runMockFS
+                (indirect "foo") env
+            result `shouldBe` Just "baz"
