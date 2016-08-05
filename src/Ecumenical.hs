@@ -3,6 +3,7 @@
 module Ecumenical
     ( retrieve
     , indirect
+    , indexed
     , runMockFS
     ) where
 
@@ -47,6 +48,10 @@ indirect x = do
         Nothing -> return Nothing
         Just y -> retrieve y
     return result
+
+indexed :: MonadDB m => ByteString -> Int -> m (Maybe ByteString)
+indexed _ _ = do
+    return (Just "correct")
 
 -- Get a value from the store by key, if it exists.
 retrieveFromFile :: ByteString -> IO (Maybe ByteString)

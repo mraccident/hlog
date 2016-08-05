@@ -50,3 +50,11 @@ main = hspec $ do
             result <- runMockFS
                 (indirect "foo") env
             result `shouldBe` Just "baz"
+        it "does indexed lookup" $ do
+            -- XXX: this requires the test to understand the index format,
+            -- which is a little bit garbage
+            let env "index" = Just "foo bar baz"
+                env "bar" = Just "correct"
+            result <- runMockFS
+                (indexed "index" 1) env
+            result `shouldBe` Just "correct"
