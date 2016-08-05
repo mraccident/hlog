@@ -50,8 +50,12 @@ indirect x = do
     return result
 
 indexed :: MonadDB m => ByteString -> Int -> m (Maybe ByteString)
-indexed _ _ = do
-    return (Just "correct")
+indexed indexName n = do
+    index <- retrieve indexName
+    result <- case index of
+        Nothing -> return Nothing
+        Just index -> retrieve $ (split ' ' index) !! n
+    return result
 
 -- Get a value from the store by key, if it exists.
 retrieveFromFile :: ByteString -> IO (Maybe ByteString)
