@@ -14,7 +14,18 @@ import Control.Exception
 import Control.Monad.Reader
 import Control.Monad.Trans
 
-newtype MockDB m a = MockDB
+-- This typeclass provides an abstraction of the DB's backing KV store
+class Monad m => Ecumenical m where
+    get :: ByteString -> m (Maybe ByteString)
+
+-- The IO instance does an unimaginably bad thing by treating keys as
+-- filenames and reading the value from the filesystem.
+instance Ecumenical IO where
+    get = retrieveFromFile . encode
+
+-- ...but a Reader monad instance is also possible, which allows testing
+-- the database functionality without relying on filesystem side effects.
+newtype Mockumenical m a = Mockumenical
     { db :: ReaderT (ByteString -> Maybe ByteString) m a }
     deriving ( Applicative
              , Functor
@@ -23,25 +34,19 @@ newtype MockDB m a = MockDB
              , MonadReader (ByteString -> Maybe ByteString)
              )
 
-class Monad m => MonadDB m where
-    get :: ByteString -> m (Maybe ByteString)
-
-instance MonadDB IO where
-    get = retrieveFromFile . encode
-
-instance Monad m => MonadDB (MockDB m) where
+instance Monad m => Ecumenical (Mockumenical m) where
     get k = asks ($ k)
 
-runMockFS :: MockDB m a -> (ByteString -> Maybe ByteString) -> m a
-runMockFS (MockDB s) = runReaderT s
+runMockFS :: Mockumenical m a -> (ByteString -> Maybe ByteString) -> m a
+runMockFS (Mockumenical s) = runReaderT s
 
 -- New version of retrieve using the monad transformer backing store.
 -- Note that the IO instance of MonadDB just delegates to the old retrieve
 -- function for now; this will be changed. Probably.
-retrieve :: MonadDB m => ByteString -> m (Maybe ByteString)
+retrieve :: Ecumenical m => ByteString -> m (Maybe ByteString)
 retrieve = get
 
-indirect :: MonadDB m => ByteString -> m (Maybe ByteString)
+indirect :: Ecumenical m => ByteString -> m (Maybe ByteString)
 indirect x = do
     y <- retrieve x
     result <- case y of
@@ -49,7 +54,7 @@ indirect x = do
         Just y -> retrieve y
     return result
 
-indexed :: MonadDB m => ByteString -> Int -> m (Maybe ByteString)
+indexed :: Ecumenical m => ByteString -> Int -> m (Maybe ByteString)
 indexed indexName n = do
     index <- retrieve indexName
     result <- case index of
