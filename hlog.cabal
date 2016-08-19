@@ -38,6 +38,8 @@ test-suite hlog-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
+  other-modules:       EcumenicalSpec
+                     , ServerSpec
   build-depends:       base
                      , hlog
                      , hspec
