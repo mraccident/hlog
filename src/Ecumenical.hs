@@ -7,12 +7,12 @@ module Ecumenical
     , runMockFS
     ) where
 
-import Prelude hiding (readFile, writeFile)
-import Data.ByteString.Char8
-import Data.ByteString.Base64
 import Control.Exception
 import Control.Monad.Reader
 import Control.Monad.Trans
+import Data.ByteString.Base64
+import Data.ByteString.Char8
+import Prelude hiding (readFile, writeFile)
 
 -- This typeclass provides an abstraction of the DB's backing KV store
 class Monad m => Ecumenical m where

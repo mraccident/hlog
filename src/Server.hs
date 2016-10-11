@@ -6,17 +6,18 @@ module Server
     , reqUri
     ) where
 
-import Prelude hiding (length, intercalate, readFile)
-import Data.ByteString.Char8
-import Network hiding (accept)
-import Network.Socket hiding (sClose, recv)
-import Network.Socket.ByteString (sendAll, recv)
 import Control.Concurrent
 import Control.Exception
 import Control.Monad.Reader
 import Control.Monad.Trans
-import Text.Regex.PCRE
+import Data.ByteString.Char8
+import Network hiding (accept)
+import Network.Socket hiding (sClose, recv)
+import Network.Socket.ByteString (sendAll, recv)
+import Prelude hiding (length, intercalate, readFile)
 import System.Posix.Env.ByteString
+import Text.Regex.PCRE
+
 import Ecumenical
 
 serve :: PortNumber -> IO ()
