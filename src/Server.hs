@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Server
     ( serve
     , response
@@ -12,6 +13,8 @@ import Network.Socket hiding (sClose, recv)
 import Network.Socket.ByteString (sendAll, recv)
 import Control.Concurrent
 import Control.Exception
+import Control.Monad.Reader
+import Control.Monad.Trans
 import Text.Regex.PCRE
 import System.Posix.Env.ByteString
 import Ecumenical
@@ -44,7 +47,7 @@ handleRequest request = case (reqUri request) of
         -- Treat URIs starting with static/ as requests for static files;
         -- everything else goes to the as yet nonexistent blog.
         case (stripPrefix "/static/" uri) of
-            Just path -> serveStatic path
+            Just path -> serveFile path
             Nothing -> do
                 value <- retrieve uri
                 case value of
@@ -58,6 +61,25 @@ staticFilesPath = do
         [path] -> path
         [] -> "static"
         _ -> "static"
+
+-- This typeclass abstracts the IO-dependent static file server
+class Monad m => StaticFileServer m where
+    serveFile :: ByteString -> m ByteString
+
+instance StaticFileServer IO where
+    serveFile = serveStatic
+
+newtype MockStaticFileServer m a = MockStaticFileServer
+    { whyDoesThisNeedAName :: ReaderT (ByteString -> ByteString) m a }
+    deriving ( Applicative
+             , Functor
+             , Monad
+             , MonadTrans
+             , MonadReader (ByteString -> ByteString)
+             )
+
+runMockServer :: MockStaticFileServer m a -> (ByteString -> ByteString) -> m a
+runMockServer (MockStaticFileServer s) = runReaderT s
 
 -- Serve static file
 serveStatic :: ByteString -> IO ByteString
