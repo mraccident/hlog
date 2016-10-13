@@ -25,8 +25,8 @@ instance Ecumenical IO where
 
 -- ...but a Reader monad instance is also possible, which allows testing
 -- the database functionality without relying on filesystem side effects.
-newtype Mockumenical m a = Mockumenical
-    { db :: ReaderT (ByteString -> Maybe ByteString) m a }
+newtype Mockumenical m a =
+    Mockumenical (ReaderT (ByteString -> Maybe ByteString) m a)
     deriving ( Applicative
              , Functor
              , Monad

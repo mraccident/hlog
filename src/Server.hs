@@ -70,8 +70,8 @@ class Monad m => StaticFileServer m where
 instance StaticFileServer IO where
     serveFile = serveStatic
 
-newtype MockStaticFileServer m a = MockStaticFileServer
-    { whyDoesThisNeedAName :: ReaderT (ByteString -> ByteString) m a }
+newtype MockStaticFileServer m a =
+    MockStaticFileServer (ReaderT (ByteString -> ByteString) m a)
     deriving ( Applicative
              , Functor
              , Monad
